@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'add_task_button.dart';
 
 class TodoListPage extends StatefulWidget {
-  final String title; // 受け取る変数
-  // コンストラクタ
-  // myappから受け取る
+  final String title;
+
   const TodoListPage({super.key, required this.title});
 
   @override
@@ -17,7 +16,7 @@ class _ToDoListPagesState extends State<TodoListPage> {
 
   void addTask() {
     setState(() {
-      tasks.add('ここに入力');
+      tasks.add('');
       checkbox.add(false);
     });
   }
@@ -27,32 +26,29 @@ class _ToDoListPagesState extends State<TodoListPage> {
     return Scaffold(
       appBar: buildAppBar(),
       body: ListView.builder(
-        itemCount: tasks.length * 2,
+        itemCount: tasks.length,  // タスクの数だけ表示
         itemBuilder: (context, index) {
-          if(index.isOdd){
-            return const Divider(
-              height: 0,
-              thickness: 1,
-              indent: 0,
-              endIndent: 0,
-              color: Colors.black,
-            );
-          }
-          int taskIndex = index ~/ 2;
           return ListTile(
-            // チェックボックスと入力欄
+            // 縦並び用
             title: Row(
               children: [
                 Checkbox(
-                  value: checkbox[taskIndex],
+                  value: checkbox[index],
                   onChanged: (bool? value) {
-                    setState(() {
-                      checkbox[index] = value ?? false;
-                    });
+                    setState(() {checkbox[index] = value ?? false;});
                   },
                 ),
-                Text(
-                  tasks[taskIndex],
+                Expanded(
+                  child: TextField(
+                    textDirection: TextDirection.ltr, // 文字の入力方向を左から右に設定
+                    controller: TextEditingController(text: tasks[index]),
+                    decoration: InputDecoration(
+                      border: UnderlineInputBorder(),
+                    ),
+                    onChanged: (value) {
+                      setState(() {tasks[index] = value;});
+                    },
+                  ),
                 ),
               ],
             ),
@@ -68,7 +64,7 @@ class _ToDoListPagesState extends State<TodoListPage> {
   PreferredSizeWidget buildAppBar() {
     return AppBar(
       title: Text(widget.title),
-      centerTitle: true, // タイトルを中央に配置
+      centerTitle: true,
     );
   }
 }
